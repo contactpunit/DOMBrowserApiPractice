@@ -1,6 +1,11 @@
 class Tooltip {}
 
 class DomHelper {
+    static clearEventListeners(element) {
+        const clonedElement = element.cloneNode(true);
+        element.replaceWith(clonedElement);
+        return clonedElement;
+    }
     static moveElement(elementId, newDestinationSelector) {
         const element = document.getElementById(elementId);
         const destinationElement = document.querySelector(newDestinationSelector);
@@ -9,17 +14,25 @@ class DomHelper {
 }
 
 class ProjectItem {
-    constructor(id, updateProjectListFunction){
+    constructor(id, updateProjectListFunction, type){
         this.id = id;
         this.updateProjectListHandler = updateProjectListFunction;
         this.connectMoreInfoButton();
-        this.connectSwitchButton();
+        this.connectSwitchButton(type);
     }
     connectMoreInfoButton() {}
-    connectSwitchButton() {
+    connectSwitchButton(type) {
         const projItemElement = document.getElementById(this.id);
-        const switchButton = projItemElement.querySelector('button:last-of-type');
+        let switchButton = projItemElement.querySelector('button:last-of-type');
+        switchButton = DomHelper.clearEventListeners(switchButton);
+        switchButton.textContent = type === 'active' ? 'Finish' : 'Activate';
         switchButton.addEventListener('click', this.updateProjectListHandler.bind(null, this.id));
+    }
+
+    update(updateProjectFunc, type) {
+        this.updateProjectListHandler = updateProjectFunc;
+        this.connectSwitchButton(type);
+
     }
 }
 
@@ -29,7 +42,7 @@ class ProjectList {
         this.type = type;
         const prjItems = document.querySelectorAll(`#${type}-projects li`);
         for (const projItem of prjItems) {
-            this.projects.push(new ProjectItem(projItem.id, this.switchProject.bind(this)));
+            this.projects.push(new ProjectItem(projItem.id, this.switchProject.bind(this), type));
         }
     }
 
@@ -45,6 +58,7 @@ class ProjectList {
     addProject(project) {
         this.projects.push(project);
         DomHelper.moveElement(project.id, `#${this.type}-projects ul`);
+        project.update(this.switchProject.bind(this), this.type);
     }
 }
 
