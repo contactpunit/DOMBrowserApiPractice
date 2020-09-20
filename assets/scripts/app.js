@@ -23,9 +23,10 @@ class Component {
 }
 
 class Tooltip extends Component{
-    constructor(closeNotfierFn) {
-        super();
+    constructor(closeNotfierFn, toolTipText, hostElementId) {
+        super(hostElementId);
         this.closeNotifier = closeNotfierFn;
+        this.text = toolTipText;
         this.create();
     }
 
@@ -37,7 +38,20 @@ class Tooltip extends Component{
     create() {
         const tooltipElement = document.createElement('div');
         tooltipElement.className = 'card';
-        tooltipElement.textContent = 'Gone';
+        tooltipElement.textContent = this.text;
+
+        const hostElPosLeft = this.hostElement.offsetLeft;
+        const hostElPosTop = this.hostElement.offsetTop;
+        const hostElHeight = this.hostElement.clientHeight;
+        const parentElScrolling = this.hostElement.parentElement.scrollTop;
+
+        const x = hostElPosLeft + 20;
+        const y = hostElPosTop + hostElHeight - parentElScrolling - 10;
+
+        tooltipElement.style.position = 'absolute';
+        tooltipElement.style.left = x + 'px';
+        tooltipElement.style.top = y + 'px';
+
         tooltipElement.addEventListener('click', this.closeToolTip);
         this.element = tooltipElement;
     }
@@ -69,9 +83,12 @@ class ProjectItem {
         if(this.hasActiveTooltip) {
             return;
         }
+        const projectElement = document.getElementById(this.id);
+        console.log(projectElement.dataset);
+        const toolTipText = projectElement.dataset.extraInfo;
         const tooltip = new Tooltip(() => {
             this.hasActiveTooltip = false;
-        });
+        }, toolTipText, this.id);
         tooltip.attach();
         this.hasActiveTooltip = true
     }
@@ -79,7 +96,7 @@ class ProjectItem {
     connectMoreInfoButton() {
         const projItemElement = document.getElementById(this.id);
         let moreInfoBtn = projItemElement.querySelector('button:first-of-type');
-        moreInfoBtn.addEventListener('click', this.showMoreInfoHandler)
+        moreInfoBtn.addEventListener('click', this.showMoreInfoHandler.bind(this))
     }
 
     connectSwitchButton(type) {
