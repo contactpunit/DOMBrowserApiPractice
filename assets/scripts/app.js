@@ -38,7 +38,11 @@ class Tooltip extends Component{
     create() {
         const tooltipElement = document.createElement('div');
         tooltipElement.className = 'card';
-        tooltipElement.textContent = this.text;
+        // tooltipElement.textContent = this.text;
+        const tooltipTemplate = document.getElementById('tooltip');
+        const tooltipBody = document.importNode(tooltipTemplate.content, true);
+        tooltipBody.querySelector('p').textContent = this.text;
+        tooltipElement.append(tooltipBody);
 
         const hostElPosLeft = this.hostElement.offsetLeft;
         const hostElPosTop = this.hostElement.offsetTop;
@@ -78,6 +82,7 @@ class ProjectItem {
         this.updateProjectListHandler = updateProjectListFunction;
         this.connectMoreInfoButton();
         this.connectSwitchButton(type);
+        this.connectDrag();
     }
 
     showMoreInfoHandler() {
@@ -92,6 +97,14 @@ class ProjectItem {
         }, toolTipText, this.id);
         tooltip.attach();
         this.hasActiveTooltip = true
+    }
+
+    connectDrag() {
+        document.getElementById(this.id).addEventListener('dragstart', (event) => {
+            event.dataTransfer.setData('text/plain', this.id);
+            event.dataTransfer.effectAllowed = 'move';
+
+        })
     }
 
     connectMoreInfoButton() {
@@ -123,6 +136,41 @@ class ProjectList {
         for (const projItem of prjItems) {
             this.projects.push(new ProjectItem(projItem.id, this.switchProject.bind(this), type));
         }
+        this.connectDroppable();
+    }
+
+    connectDroppable() {
+        const list = document.querySelector(`#${this.type}-projects ul`);
+        list.addEventListener('dragover', event => {
+            if (event.dataTransfer.types[0] === 'text/plain') {
+                event.preventDefault();
+            }
+        });
+        list.addEventListener('dragenter', event => {
+            if (event.dataTransfer.types[0] === 'text/plain') {
+                list.parentElement.classList.add('droppable');
+                event.preventDefault();
+            }
+        });
+
+        list.addEventListener('dragleave', event => {
+            if(event.relatedTarget.closest(`#${this.type}-projects ul`) !== list) {
+                list.parentElement.classList.remove('droppable');
+            } 
+        });
+
+        list.addEventListener('drop', event =>  {
+            const prjId = event.dataTransfer.getData('text/plain');
+            if(this.projects.find(f => f.id === prjId)) {
+                return;
+            }
+            document
+            .getElementById(prjId)
+            .querySelector('button:last-of-type')
+            .click();
+            list.parentElement.classList.remove('droppable');
+            event.preventDefault();
+        })
     }
 
     switchProject(projId) {
