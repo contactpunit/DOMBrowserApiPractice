@@ -4,7 +4,9 @@
   "description": "Javascript Project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "devbuild": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,9 @@
   },
   "homepage": "https://github.com/contactpunit/DOMBrowserApiPractice#readme",
   "devDependencies": {
-    "eslint": "^7.10.0"
+    "eslint": "^7.10.0",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }

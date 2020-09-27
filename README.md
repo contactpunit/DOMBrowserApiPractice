@@ -4,7 +4,8 @@ This project uses :
 
 1. Javascript
 2. Eslint - for ling
-3. Webpack - for packaging
+3. Webpack - for packaging and Code optimization
+4. Webpack CLI - for Auto reCompiling and reloading
 
 ## Installation
 
