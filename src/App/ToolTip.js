@@ -33,7 +33,7 @@ export class Tooltip extends Component {
         tooltipElement.style.top = `${y} + px`;
 
         tooltipElement.addEventListener('click',
-            this.closeToolTip);
+            this.closeTooltip.bind(this));
         this.element = tooltipElement;
     }
 }

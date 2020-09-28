@@ -10,7 +10,7 @@ export class ProjectList {
             this.projects.push(new ProjectItem(
                 projItem.id,
                 this.switchProject.bind(this),
-                type));
+                this.type));
         }
         this.connectDroppable();
     }
