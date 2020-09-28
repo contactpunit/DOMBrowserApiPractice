@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/contactpunit/DOMBrowserApiPractice#readme",
   "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
     "eslint": "^7.10.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
